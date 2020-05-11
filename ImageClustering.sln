@@ -3,7 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageClusteringLibrary", "ImageClusteringLibrary\ImageClusteringLibrary.csproj", "{A5D76074-68CD-4B6D-94CB-DD186D1B33F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageClusteringUI", "ImageClusteringUI\ImageClusteringUI.csproj", "{11CFB93D-4200-4921-B1A5-D0CC0F823226}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5D76074-68CD-4B6D-94CB-DD186D1B33F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5D76074-68CD-4B6D-94CB-DD186D1B33F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5D76074-68CD-4B6D-94CB-DD186D1B33F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5D76074-68CD-4B6D-94CB-DD186D1B33F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11CFB93D-4200-4921-B1A5-D0CC0F823226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11CFB93D-4200-4921-B1A5-D0CC0F823226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11CFB93D-4200-4921-B1A5-D0CC0F823226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11CFB93D-4200-4921-B1A5-D0CC0F823226}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
