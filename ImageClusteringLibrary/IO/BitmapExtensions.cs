@@ -15,6 +15,18 @@ namespace ImageClusteringLibrary.IO
             return new Rectangle(0, 0, bitmap.Width, bitmap.Height);
         }
 
+        /// <summary>
+        /// Gets the color value of a pixel in CIELAB space
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static ColorCielab GetCielabPixel(this Bitmap bitmap, int x, int y)
+        {
+            return ColorCielab.FromRgb(new RgbVector(bitmap.GetPixel(x, y)));
+        }
+
         public static ImagePixel[] ToPixels(this Bitmap bitmap)
         {
             //// lock the image bytes

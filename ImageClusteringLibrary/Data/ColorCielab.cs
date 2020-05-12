@@ -27,6 +27,14 @@ namespace ImageClusteringLibrary.Data
             this.b = b;
         }
 
+        public static ColorCielab operator +(in ColorCielab a) => a;
+        public static ColorCielab operator -(in ColorCielab a) => new ColorCielab(-a.L, -a.a, -a.b);
+
+        public static ColorCielab operator +(in ColorCielab a, in ColorCielab b) =>
+            new ColorCielab(a.L + b.L, a.a + b.a, a.b + b.b);
+
+        public static ColorCielab operator -(in ColorCielab a, in ColorCielab b) => a + (-b);
+
         /// <summary>
         /// Calculates a <see cref="ColorCielab"/> from a color in standard rgb space
         /// </summary>
