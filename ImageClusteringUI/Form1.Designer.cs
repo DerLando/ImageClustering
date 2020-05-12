@@ -51,6 +51,7 @@
             this.pB_Result.Size = new System.Drawing.Size(776, 397);
             this.pB_Result.TabIndex = 1;
             this.pB_Result.TabStop = false;
+            this.pB_Result.Click += new System.EventHandler(this.pB_Result_Click);
             // 
             // btn_Reset
             // 

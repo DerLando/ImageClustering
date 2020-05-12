@@ -22,7 +22,7 @@ namespace ImageClusteringUI
             InitializeComponent();
 
             var link = "C:\\Users\\Lando1\\Google Drive\\Wohnzimmer_auf_dem_sofa_000.png";
-            _solver = new Solver(feininger, clusterCount);
+            _solver = new Solver(link, clusterCount);
             _solver.Next();
             pB_Result.Image = _solver.GetClusterImage();
         }
@@ -55,6 +55,11 @@ namespace ImageClusteringUI
             _solver.Restart(clusterCount);
 
             pB_Result.Image = _solver.GetClusterImage();
+        }
+
+        private void pB_Result_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

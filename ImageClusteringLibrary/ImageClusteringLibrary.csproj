@@ -46,9 +46,12 @@
   <ItemGroup>
     <Compile Include="Algorithms\ClusterRandomFunction.cs" />
     <Compile Include="Algorithms\Solver.cs" />
+    <Compile Include="Data\ColorCielab.cs" />
     <Compile Include="Data\ColorHsv.cs" />
+    <Compile Include="Data\ColorXYZ.cs" />
     <Compile Include="Data\ImagePixel.cs" />
     <Compile Include="Data\PixelCluster.cs" />
+    <Compile Include="Data\PixelLabxy.cs" />
     <Compile Include="Data\Vector2.cs" />
     <Compile Include="Data\RgbVector.cs" />
     <Compile Include="IO\BitmapExtensions.cs" />
