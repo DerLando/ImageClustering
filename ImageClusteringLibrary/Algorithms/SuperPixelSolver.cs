@@ -45,6 +45,67 @@ namespace ImageClusteringLibrary.Algorithms
         }
 
         /// <summary>
+        /// Calculates a grid of regular spaced points in the given
+        /// rectangle bounds
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="k">number of points in the grid</param>
+        /// <returns></returns>
+        public static Vector2<int>[] CalculateGrid(Rectangle rect, int k)
+        {
+            var positions = new Vector2<int>[k];
+
+            // width * aspect_ratio * height = k
+
+            int kS = (int)Math.Sqrt(k);
+            int xCount = rect.Width / k;
+            int yCount = k / xCount;
+            int cellWidth = rect.Width / xCount;
+            int cellHeight = rect.Height / yCount;
+
+            for (int i = 0; i < xCount; i++)
+            {
+                var offset = i * yCount;
+                var xPosition = cellWidth * (i + 0.5);
+
+                for (int j = 0; j < yCount; j++)
+                {
+                    positions[offset + j] = new Vector2<int>((int)xPosition, (int)(cellHeight * (j + 0.5)));
+                }
+            }
+
+            return positions;
+        }
+
+        /// <summary>
+        /// Calculates the grid of neighboring positions around the given position
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="depth">number of positions in x and y direction to find, should be odd</param>
+        /// <returns></returns>
+        private static Vector2<int>[] GetNeighboringPositions(in Vector2<int> position, int depth)
+        {
+            var positions = new Vector2<int>[depth * depth];
+            var minDepth = -depth / 2;
+            var maxDepth = depth / 2;
+
+            for (int i = minDepth; i < maxDepth; i++)
+            {
+                var offset = i * depth;
+                var xPosition = position.X + i;
+
+                for (int j = minDepth; j < maxDepth ; j++)
+                {
+                    var yPosition = position.Y + i;
+
+                    positions[offset + j] = new Vector2<int>(xPosition, yPosition);
+                }
+            }
+
+            return positions;
+        }
+
+        /// <summary>
         /// Compute the gradient value of the pixel at the given x,y coordinates
         /// </summary>
         /// <param name="bitmap"></param>
@@ -60,6 +121,40 @@ namespace ImageClusteringLibrary.Algorithms
         }
 
         /// <summary>
+        /// Gets the position with the smallest gradient in a 3x3 neighborhood
+        /// for the given position
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        private static Vector2<int> GetSmallestGradient(Bitmap bitmap, in Vector2<int> position)
+        {
+            // best fit
+            Vector2<int> result = position;
+            var smallestGradient = 1000000.0;
+
+            // check 3x3 neighbours
+            for (int i = -1; i < 2; i++)
+            {
+                var xPosition = position.X + i;
+
+                for (int j = -1; j < 2; j++)
+                {
+                    var yPosition = position.Y + i;
+
+                    var gradient = PixelGradient(bitmap, xPosition, yPosition);
+                    if (gradient < smallestGradient)
+                    {
+                        smallestGradient = gradient;
+                        result = new Vector2<int>(xPosition, yPosition);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Solve for a given image
         /// </summary>
         /// <param name="bitmap">Image to solve for</param>
@@ -68,10 +163,29 @@ namespace ImageClusteringLibrary.Algorithms
         /// valid values are between 1 and 20, 10 is generally a good middle-ground to choose</param>
         public static void Solve(Bitmap bitmap, int pixelCount, int compactness)
         {
+            // initial values
             var K = pixelCount;
             var N = bitmap.Width * bitmap.Height;
             var m = compactness;
-            var S = Math.Sqrt(N / K);
+            var S = (int)Math.Sqrt(N / K);
+
+            // calculate grid
+            var grid = CalculateGrid(bitmap.GetRectangle(), K);
+
+            // iterate over grid
+            for (int i = 0; i < K; i++)
+            {
+                // assign neighbor with smallest gradient to grid position
+                grid[i] = GetSmallestGradient(bitmap, grid[i]);
+            }
+
+            // iterate of clusters again
+            for (int i = 0; i < K; i++)
+            {
+                var positions = GetNeighboringPositions(grid[i], 2 * S);
+                // TODO: Calculate distance to cluster centroid
+                // TODO: Choose pixels to add to cluster, depending on distance function result
+            }
         }
     }
 }

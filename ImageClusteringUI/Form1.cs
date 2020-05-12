@@ -25,6 +25,9 @@ namespace ImageClusteringUI
             _solver = new Solver(link, clusterCount);
             _solver.Next();
             pB_Result.Image = _solver.GetClusterImage();
+
+            // DEBUG:
+            //var test = SuperPixelSolver.CalculateGrid(new Rectangle(0, 0, 70, 100), 20);
         }
 
         private void btn_Next_Click(object sender, EventArgs e)
