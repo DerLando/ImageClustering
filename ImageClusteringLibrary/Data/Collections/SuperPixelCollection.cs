@@ -74,14 +74,17 @@ namespace ImageClusteringLibrary.Data.Collections
 
         public bool UpdatePixelCentroids()
         {
-            var changeOccured = true;
+            var changed = 0;
 
             foreach (var superPixel in _superPixels)
             {
-                changeOccured &= superPixel.UpdateCentroid();
+                if (superPixel.UpdateCentroid())
+                {
+                    changed += 1;
+                }
             }
 
-            return changeOccured;
+            return _superPixels.Length / changed < 10; // less then 10% change
         }
 
         public List<Vector2<int>[]> GetPixelBoundaryPositions()

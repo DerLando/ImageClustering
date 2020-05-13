@@ -29,6 +29,11 @@ namespace ImageClusteringLibrary.Data
             _centroid = centroid;
         }
 
+        public override string ToString()
+        {
+            return $"SuperPixel: Centroid {_centroid}, PixelCount {_positions.Count}";
+        }
+
         /// <summary>
         /// Add a pixel position to this super pixel
         /// </summary>
@@ -52,7 +57,7 @@ namespace ImageClusteringLibrary.Data
             _centroid = _positions.Mean();
 
             // compare old and new centroid
-            return oldCentroid.Equals(_centroid);
+            return PositionHelper.PositionSquaredDistance(oldCentroid, _centroid) < 25; // < 5²
         }
 
         /// <summary>

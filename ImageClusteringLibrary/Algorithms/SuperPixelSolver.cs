@@ -162,6 +162,12 @@ namespace ImageClusteringLibrary.Algorithms
                     // get the closest index
                     var closestIndex = GetClosestIndex(bitmap, pixel, indices, superPixels, m, S);
 
+                    if (closestIndex == -1)
+                    {
+                        //TODO: THis is bad, need to fix is!
+                        continue;
+                    }
+
                     // Add pixel to superpixel collection at the closest superpixel index
                     superPixels.AddPosition(closestIndex, pixel.Position);
                 }
@@ -170,7 +176,10 @@ namespace ImageClusteringLibrary.Algorithms
                 if(!superPixels.UpdatePixelCentroids()) break;
 
                 // check safety
-                if(safetyIterator > 100) break;
+                if (safetyIterator > 100)
+                {
+                    break;
+                }
 
                 safetyIterator++;
 

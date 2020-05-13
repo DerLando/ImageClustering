@@ -92,5 +92,15 @@ namespace ImageClusteringLibrary.Algorithms
             return positions;
         }
 
+        public static double PositionSquaredDistance(in Vector2<int> a, in Vector2<int> b)
+        {
+            return a.X - b.X * a.X - b.X + a.Y - b.Y * a.Y - a.Y;
+        }
+
+        public static double PositionDistance(in Vector2<int> a, in Vector2<int> b)
+        {
+            return Math.Sqrt(PositionSquaredDistance(a, b));
+        }
+
     }
 }
