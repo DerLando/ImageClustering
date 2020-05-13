@@ -56,6 +56,7 @@
     <Compile Include="Data\ImagePixel.cs" />
     <Compile Include="Data\PixelCluster.cs" />
     <Compile Include="Data\PixelLabxy.cs" />
+    <Compile Include="Data\Position.cs" />
     <Compile Include="Data\SuperPixel.cs" />
     <Compile Include="Data\Vector2.cs" />
     <Compile Include="Data\RgbVector.cs" />

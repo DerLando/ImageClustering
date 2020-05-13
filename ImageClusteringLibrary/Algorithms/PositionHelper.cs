@@ -16,9 +16,9 @@ namespace ImageClusteringLibrary.Algorithms
         /// <param name="position"></param>
         /// <param name="depth">number of positions in x and y direction to find, should be odd</param>
         /// <returns></returns>
-        public static Vector2<int>[] GetNeighboringPositions(in Vector2<int> position, int depth)
+        public static Position[] GetNeighboringPositions(in Position position, int depth)
         {
-            var positions = new Vector2<int>[depth * depth];
+            var positions = new Position[depth * depth];
             var minDepth = -depth / 2;
             var maxDepth = depth / 2;
             var iter = 0;
@@ -26,14 +26,14 @@ namespace ImageClusteringLibrary.Algorithms
             for (int i = minDepth; i <= maxDepth; i++)
             {
                 var offset = iter * depth;
-                var xPosition = position.X + i;
+                var xPosition = position.Vector.X + i;
                 var innerIter = 0;
 
                 for (int j = minDepth; j <= maxDepth; j++)
                 {
-                    var yPosition = position.Y + j;
+                    var yPosition = position.Vector.Y + j;
 
-                    positions[offset + innerIter] = new Vector2<int>(xPosition, yPosition);
+                    positions[offset + innerIter] = new Position(xPosition, yPosition);
 
                     innerIter++;
                 }
@@ -51,9 +51,9 @@ namespace ImageClusteringLibrary.Algorithms
         /// <param name="rect"></param>
         /// <param name="k">number of points in the grid</param>
         /// <returns></returns>
-        public static Vector2<int>[] CalculateGrid(Rectangle rect, int k)
+        public static Position[] CalculateGrid(Rectangle rect, int k)
         {
-            var positions = new Vector2<int>[k];
+            var positions = new Position[k];
 
             int kS = (int)Math.Sqrt(k);
             int kPow = k * k;
@@ -73,7 +73,7 @@ namespace ImageClusteringLibrary.Algorithms
 
                 for (int j = 0; j < yCount; j++)
                 {
-                    positions[offset + j] = new Vector2<int>((int)xPosition, (int)(cellHeight * (j + 0.5)));
+                    positions[offset + j] = new Position((int)xPosition, (int)(cellHeight * (j + 0.5)));
                 }
             }
 
@@ -86,21 +86,10 @@ namespace ImageClusteringLibrary.Algorithms
             cellHeight = rect.Height / remainingCount;
             for (int i = 0; i < remainingCount ; i++)
             {
-                positions[startIndex + i] = new Vector2<int>((int)xPos, (int)(cellHeight * (i + 0.5)));
+                positions[startIndex + i] = new Position((int)xPos, (int)(cellHeight * (i + 0.5)));
             }
 
             return positions;
         }
-
-        public static double PositionSquaredDistance(in Vector2<int> a, in Vector2<int> b)
-        {
-            return a.X - b.X * a.X - b.X + a.Y - b.Y * a.Y - a.Y;
-        }
-
-        public static double PositionDistance(in Vector2<int> a, in Vector2<int> b)
-        {
-            return Math.Sqrt(PositionSquaredDistance(a, b));
-        }
-
     }
 }

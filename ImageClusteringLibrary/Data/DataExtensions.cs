@@ -13,22 +13,19 @@ namespace ImageClusteringLibrary.Data
         /// </summary>
         /// <param name="positions"></param>
         /// <returns></returns>
-        public static Vector2<int> Mean(this IEnumerable<Vector2<int>> positions)
+        public static Position Mean(this IEnumerable<Position> positions)
         {
             var posArray = positions.ToArray();
-            int xPosition = 0;
-            int yPosition = 0;
+            var zero = Position.Zero;
 
             foreach (var position in posArray)
             {
-                xPosition += position.X;
-                yPosition += position.Y;
+                zero += position;
             }
 
-            xPosition /= posArray.Length;
-            yPosition /= posArray.Length;
+            zero /= posArray.Length;
 
-            return new Vector2<int>(xPosition, yPosition);
+            return zero;
         }
     }
 }

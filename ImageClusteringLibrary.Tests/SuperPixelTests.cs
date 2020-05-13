@@ -13,7 +13,7 @@ namespace ImageClusteringLibrary.Tests
         {
             // Arrange
             // create an 11x11 square
-            var superPixel = new SuperPixel(new Vector2<int>(5, 5));
+            var superPixel = new SuperPixel(new Position(5, 5));
             var grid = PositionHelper.GetNeighboringPositions(superPixel.Centroid, 11);
             foreach (var position in grid)
             {

@@ -35,7 +35,7 @@ namespace ImageClusteringLibrary.Data.Collections
         /// </summary>
         /// <param name="index"></param>
         /// <param name="position"></param>
-        public void AddPosition(int index, in Vector2<int> position)
+        public void AddPosition(int index, in Position position)
         {
             _superPixels[index].AddPosition(position);
         }
@@ -46,7 +46,7 @@ namespace ImageClusteringLibrary.Data.Collections
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public int[] GetContainingSuperPixelIndices(in Vector2<int> position)
+        public int[] GetContainingSuperPixelIndices(in Position position)
         {
             // empty list to store indices of super pixels
             var indices = new List<int>();
@@ -87,10 +87,10 @@ namespace ImageClusteringLibrary.Data.Collections
             return _superPixels.Length / changed < 10; // less then 10% change
         }
 
-        public List<Vector2<int>[]> GetPixelBoundaryPositions()
+        public List<Position[]> GetPixelBoundaryPositions()
         {
             // empty list to store pixel boundaries
-            var boundaries = new List<Vector2<int>[]>();
+            var boundaries = new List<Position[]>();
 
             // iterate over super pixels
             foreach (var superPixel in _superPixels)

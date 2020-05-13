@@ -28,8 +28,7 @@ namespace ImageClusteringLibrary.Algorithms
             var d_lab = Math.Sqrt((a.Lab.L - b.Lab.L) * (a.Lab.L - b.Lab.L) +
                                   (a.Lab.a - a.Lab.a) * (a.Lab.a - a.Lab.a) +
                                   (a.Lab.b - a.Lab.b) * (a.Lab.b - a.Lab.b));
-            var d_xy = Math.Sqrt((a.Position.X - b.Position.X) * (a.Position.X - b.Position.X) +
-                                 (a.Position.Y - a.Position.Y) * (a.Position.Y - b.Position.Y));
+            var d_xy = a.Position.DistanceTo(b.Position);
 
             return d_lab + (m / S) * d_xy;
         }
@@ -67,10 +66,10 @@ namespace ImageClusteringLibrary.Algorithms
         /// <param name="bitmap"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        private static Vector2<int> GetSmallestGradient(Bitmap bitmap, in Vector2<int> position)
+        private static Position GetSmallestGradient(Bitmap bitmap, in Position position)
         {
             // best fit
-            Vector2<int> result = position;
+            Position result = position;
             var smallestGradient = 1000000.0;
 
             // check 3x3 neighbours
@@ -78,9 +77,9 @@ namespace ImageClusteringLibrary.Algorithms
             foreach (var gridPosition in grid)
             {
                 // check if bad grid position
-                if (position.X < 0 | position.Y < 0) continue;
+                if (position.Vector.X < 0 | position.Vector.Y < 0) continue;
 
-                var gradient = PixelGradient(bitmap, gridPosition.X, gridPosition.Y);
+                var gradient = PixelGradient(bitmap, gridPosition.Vector.X, gridPosition.Vector.Y);
                 if (gradient < smallestGradient)
                 {
                     smallestGradient = gradient;

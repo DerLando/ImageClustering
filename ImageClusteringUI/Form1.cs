@@ -36,7 +36,7 @@ namespace ImageClusteringUI
             {
                 foreach (var position in boundaryCollection)
                 {
-                    image.SetPixel(position.X, position.Y, Color.Red);
+                    image.SetPixel(position.Vector.X, position.Vector.Y, Color.Red);
                 }
             }
 

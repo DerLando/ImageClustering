@@ -21,9 +21,9 @@ namespace ImageClusteringLibrary.Data
         /// <summary>
         /// Position of pixel inside image
         /// </summary>
-        public readonly Vector2<int> Position;
+        public readonly Position Position;
 
-        public PixelLabxy(ColorCielab lab, Vector2<int> position)
+        public PixelLabxy(ColorCielab lab, Position position)
         {
             Lab = lab;
             Position = position;

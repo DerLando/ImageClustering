@@ -15,16 +15,16 @@ namespace ImageClusteringLibrary.Data
         /// <summary>
         /// Pixel positions related to this super pixel
         /// </summary>
-        private List<Vector2<int>> _positions = new List<Vector2<int>>();
+        private List<Position> _positions = new List<Position>();
 
         /// <summary>
         /// The logical center position of the super pixel
         /// </summary>
-        private Vector2<int> _centroid;
+        private Position _centroid;
 
-        public Vector2<int> Centroid => _centroid;
+        public Position Centroid => _centroid;
 
-        public SuperPixel(in Vector2<int> centroid)
+        public SuperPixel(in Position centroid)
         {
             _centroid = centroid;
         }
@@ -38,7 +38,7 @@ namespace ImageClusteringLibrary.Data
         /// Add a pixel position to this super pixel
         /// </summary>
         /// <param name="position"></param>
-        public void AddPosition(in Vector2<int> position) { _positions.Add(position);}
+        public void AddPosition(in Position position) { _positions.Add(position);}
 
         /// <summary>
         /// Updates the centroid of the superpixel to the mean of all pixel
@@ -57,21 +57,21 @@ namespace ImageClusteringLibrary.Data
             _centroid = _positions.Mean();
 
             // compare old and new centroid
-            return PositionHelper.PositionSquaredDistance(oldCentroid, _centroid) < 25; // < 5²
+            return oldCentroid.DistanceToSquared(_centroid) < 25; // < 5²
         }
 
         /// <summary>
         /// Clears all stored pixel positions, the centroid stays the same
         /// </summary>
-        public void Reset() { _positions = new List<Vector2<int>>();}
+        public void Reset() { _positions = new List<Position>();}
 
-        public Vector2<int>[] GetBoundaryPositions()
+        public Position[] GetBoundaryPositions()
         {
             // all pixels that have an existing neighbor on all positions in a 3x3 grid around them
             // are by definition inner pixels
 
             // new list to store boundary pixels
-            var boundary = new List<Vector2<int>>();
+            var boundary = new List<Position>();
 
             // iterate over positions
             foreach (var position in _positions)
@@ -96,9 +96,10 @@ namespace ImageClusteringLibrary.Data
         /// <param name="position"></param>
         /// <param name="distance">Maximum distance for a position away from the centroid to be considered a valid candidate</param>
         /// <returns>True if the position is a valid candidate, False if not</returns>
-        public bool IsValidPositionCandidate(in Vector2<int> position, int distance)
+        public bool IsValidPositionCandidate(in Position position, int distance)
         {
-            return Math.Abs(position.X - _centroid.X) <= distance && Math.Abs(position.Y - _centroid.Y) <= distance;
+            return Math.Abs(position.Vector.X - _centroid.Vector.X) <= distance &&
+                   Math.Abs(position.Vector.Y - _centroid.Vector.Y) <= distance;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace ImageClusteringLibrary.Tests
         public void PositionHelperNeighbors_ShouldWork()
         {
             // Arrange
-            var center = new Vector2<int>(5, 5);
+            var center = new Position(5, 5);
 
             // Act
             var grid = PositionHelper.GetNeighboringPositions(center, 11);
@@ -34,7 +34,7 @@ namespace ImageClusteringLibrary.Tests
             // Arrange
             var rect = new Rectangle(0, 0, 500, 400);
             var pointCount = 50;
-            var zero = new Vector2<int>(0, 0);
+            var zero = new Position(0, 0);
 
             // Act
             var grid = PositionHelper.CalculateGrid(rect, pointCount);
@@ -54,11 +54,11 @@ namespace ImageClusteringLibrary.Tests
 
             // Act
             var grid = PositionHelper.CalculateGrid(rect, pointCount);
-            var badPositions = new List<Vector2<int>>();
+            var badPositions = new List<Position>();
             foreach (var position in grid)
             {
-                if(position.X < rect.X | position.X > rect.Width) badPositions.Add(position);
-                if(position.Y < rect.Y | position.Y > rect.Height) badPositions.Add(position);
+                if(position.Vector.X < rect.X | position.Vector.X > rect.Width) badPositions.Add(position);
+                if(position.Vector.Y < rect.Y | position.Vector.Y > rect.Height) badPositions.Add(position);
             }
 
             // Assert

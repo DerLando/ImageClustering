@@ -35,9 +35,9 @@ namespace ImageClusteringLibrary.IO
         /// <param name="bitmap"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public static ColorCielab GetCielabColor(this Bitmap bitmap, in Vector2<int> position)
+        public static ColorCielab GetCielabColor(this Bitmap bitmap, in Position position)
         {
-            return ColorCielab.FromRgb(new RgbVector(bitmap.GetPixel(position.X, position.Y)));
+            return ColorCielab.FromRgb(new RgbVector(bitmap.GetPixel(position.Vector.X, position.Vector.Y)));
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace ImageClusteringLibrary.IO
         /// <param name="bitmap"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public static PixelLabxy GetCielabPixel(this Bitmap bitmap, in Vector2<int> position)
+        public static PixelLabxy GetCielabPixel(this Bitmap bitmap, in Position position)
         {
             return new PixelLabxy(bitmap.GetCielabColor(position), position);
         }
@@ -86,11 +86,11 @@ namespace ImageClusteringLibrary.IO
         /// </summary>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public static Vector2<int>[] ToPositionVectors(this Bitmap bitmap)
+        public static Position[] ToPositionVectors(this Bitmap bitmap)
         {
             var width = bitmap.Width;
             var height = bitmap.Height;
-            var positions = new Vector2<int>[width * height];
+            var positions = new Position[width * height];
 
             // iterate over image width
             for (int i = 0; i < width; i++)
@@ -100,7 +100,7 @@ namespace ImageClusteringLibrary.IO
                 for (int j = 0; j < height; j++)
                 {
                     // create new imagepixel and insert in array
-                    positions[offset + j] = new Vector2<int>(i, j);
+                    positions[offset + j] = new Position(i, j);
                 }
             }
 
@@ -127,7 +127,7 @@ namespace ImageClusteringLibrary.IO
                 for (int j = 0; j < height; j++)
                 {
                     // create new imagepixel and insert in array
-                    pixels[offset + j] = new PixelLabxy(bitmap.GetCielabColor(i, j), new Vector2<int>(i, j));
+                    pixels[offset + j] = new PixelLabxy(bitmap.GetCielabColor(i, j), new Position(i, j));
                 }
             }
 
