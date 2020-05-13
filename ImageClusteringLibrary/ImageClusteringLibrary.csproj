@@ -48,6 +48,7 @@
     <Compile Include="Algorithms\PositionHelper.cs" />
     <Compile Include="Algorithms\Solver.cs" />
     <Compile Include="Algorithms\SuperPixelSolver.cs" />
+    <Compile Include="Data\Collections\ImagePixelLabxyCollection.cs" />
     <Compile Include="Data\Collections\SuperPixelCollection.cs" />
     <Compile Include="Data\ColorCielab.cs" />
     <Compile Include="Data\ColorHsv.cs" />

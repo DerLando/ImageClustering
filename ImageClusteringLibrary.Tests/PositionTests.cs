@@ -64,5 +64,19 @@ namespace ImageClusteringLibrary.Tests
             // Assert
             Assert.AreEqual(0, badPositions.Count);
         }
+
+        [TestMethod]
+        public void PositionMeanParallel_ShouldGiveSameResultAsSingleThreaded()
+        {
+            // Arrange
+            var positions = (from i in Enumerable.Range(0, 10000) select new Position(i, i)).ToArray();
+
+            // Act
+            var expected = positions.Mean();
+            var actual = positions.MeanParallel();
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

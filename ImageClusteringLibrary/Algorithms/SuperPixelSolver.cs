@@ -146,6 +146,9 @@ namespace ImageClusteringLibrary.Algorithms
             // safety iterator
             var safetyIterator = 0;
 
+            // parallel debug for now
+            var parallel = true;
+
             // run optimization loop on superpixel collection
             while (true)
             {
@@ -153,26 +156,51 @@ namespace ImageClusteringLibrary.Algorithms
                 superPixels.ResetPixels();
 
                 // iterate over all pixels
-                foreach (var pixel in pixels)
+                if (parallel)
                 {
-                    // query 2Sx2S grid around the current pixel for all superpixel centroids in it
-                    var indices = superPixels.GetContainingSuperPixelIndices(pixel.Position);
-
-                    // get the closest index
-                    var closestIndex = GetClosestIndex(bitmap, pixel, indices, superPixels, m, S);
-
-                    if (closestIndex == -1)
+                    Parallel.ForEach(pixels, (pixel) =>
                     {
-                        //TODO: THis is bad, need to fix is!
-                        continue;
+                        // query 2Sx2S grid around the current pixel for all superpixel centroids in it
+                        var indices = superPixels.GetContainingSuperPixelIndices(pixel.Position);
+
+                        // get the closest index
+                        var closestIndex = GetClosestIndex(bitmap, pixel, indices, superPixels, m, S);
+
+                        if (closestIndex == -1)
+                        {
+                            //TODO: THis is bad, need to fix is!
+                            return;
+                        }
+
+                        // Add pixel to superpixel collection at the closest superpixel index
+                        superPixels.AddPosition(closestIndex, pixel.Position);
+                    });
+                }
+
+                else
+                {
+                    foreach (var pixel in pixels)
+                    {
+                        // query 2Sx2S grid around the current pixel for all superpixel centroids in it
+                        var indices = superPixels.GetContainingSuperPixelIndices(pixel.Position);
+
+                        // get the closest index
+                        var closestIndex = GetClosestIndex(bitmap, pixel, indices, superPixels, m, S);
+
+                        if (closestIndex == -1)
+                        {
+                            //TODO: THis is bad, need to fix is!
+                            continue;
+                        }
+
+                        // Add pixel to superpixel collection at the closest superpixel index
+                        superPixels.AddPosition(closestIndex, pixel.Position);
                     }
 
-                    // Add pixel to superpixel collection at the closest superpixel index
-                    superPixels.AddPosition(closestIndex, pixel.Position);
                 }
 
                 // update centroids
-                if(!superPixels.UpdatePixelCentroids()) break;
+                if (!superPixels.UpdatePixelCentroids()) break;
 
                 // check safety
                 if (safetyIterator > 100)

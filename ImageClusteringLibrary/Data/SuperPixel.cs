@@ -54,7 +54,7 @@ namespace ImageClusteringLibrary.Data
             var oldCentroid = _centroid;
 
             // set centroid to mean of all pixel positions
-            _centroid = _positions.Mean();
+            _centroid = _positions.MeanParallel();
 
             // compare old and new centroid
             return oldCentroid.DistanceToSquared(_centroid) < 25; // < 5²
