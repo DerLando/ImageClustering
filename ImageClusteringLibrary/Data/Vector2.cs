@@ -20,5 +20,10 @@ namespace ImageClusteringLibrary.Data
             X = x;
             Y = y;
         }
+
+        public override string ToString()
+        {
+            return $"Vector of {typeof(T)}, X:{X}, Y:{Y}";
+        }
     }
 }

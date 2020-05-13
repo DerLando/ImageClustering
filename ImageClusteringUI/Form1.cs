@@ -15,14 +15,13 @@ namespace ImageClusteringUI
     {
         private Solver _solver;
         private int clusterCount = 20;
-        private string feininger = "C:\\Users\\Lando1\\Desktop\\lyonel-feininger-ostsee-schoner.jpg";
+        private string feininger = "D:\\Desktop\\cornwall_stock.jpg";
 
         public Form1()
         {
             InitializeComponent();
 
-            var link = "C:\\Users\\Lando1\\Google Drive\\Wohnzimmer_auf_dem_sofa_000.png";
-            _solver = new Solver(link, clusterCount);
+            _solver = new Solver(feininger, clusterCount);
             _solver.Next();
             pB_Result.Image = _solver.GetClusterImage();
 

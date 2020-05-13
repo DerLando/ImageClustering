@@ -78,34 +78,6 @@ namespace ImageClusteringLibrary.Algorithms
         }
 
         /// <summary>
-        /// Calculates the grid of neighboring positions around the given position
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="depth">number of positions in x and y direction to find, should be odd</param>
-        /// <returns></returns>
-        private static Vector2<int>[] GetNeighboringPositions(in Vector2<int> position, int depth)
-        {
-            var positions = new Vector2<int>[depth * depth];
-            var minDepth = -depth / 2;
-            var maxDepth = depth / 2;
-
-            for (int i = minDepth; i < maxDepth; i++)
-            {
-                var offset = i * depth;
-                var xPosition = position.X + i;
-
-                for (int j = minDepth; j < maxDepth ; j++)
-                {
-                    var yPosition = position.Y + i;
-
-                    positions[offset + j] = new Vector2<int>(xPosition, yPosition);
-                }
-            }
-
-            return positions;
-        }
-
-        /// <summary>
         /// Compute the gradient value of the pixel at the given x,y coordinates
         /// </summary>
         /// <param name="bitmap"></param>
@@ -182,7 +154,16 @@ namespace ImageClusteringLibrary.Algorithms
             // iterate of clusters again
             for (int i = 0; i < K; i++)
             {
-                var positions = GetNeighboringPositions(grid[i], 2 * S);
+                var centroid = new PixelLabxy(bitmap.GetCielabPixel(grid[i].X, grid[i].Y), grid[i]);
+                var positions = PositionHelper.GetNeighboringPositions(grid[i], 2 * S);
+
+                // iterate over positions
+                foreach (var position in positions)
+                {
+                    // calculate distance in labxy space
+                    var labxy = new PixelLabxy(bitmap.GetCielabPixel(position.X, position.Y), position);
+                    var distance = PixelDistance(centroid, labxy, m, S);
+                }
                 // TODO: Calculate distance to cluster centroid
                 // TODO: Choose pixels to add to cluster, depending on distance function result
             }

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageClusteringLibrary", "I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageClusteringUI", "ImageClusteringUI\ImageClusteringUI.csproj", "{11CFB93D-4200-4921-B1A5-D0CC0F823226}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageClusteringLibrary.Tests", "ImageClusteringLibrary.Tests\ImageClusteringLibrary.Tests.csproj", "{7D607D29-D15B-4F26-ACB3-4EE7EF138BEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{11CFB93D-4200-4921-B1A5-D0CC0F823226}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11CFB93D-4200-4921-B1A5-D0CC0F823226}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11CFB93D-4200-4921-B1A5-D0CC0F823226}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D607D29-D15B-4F26-ACB3-4EE7EF138BEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D607D29-D15B-4F26-ACB3-4EE7EF138BEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D607D29-D15B-4F26-ACB3-4EE7EF138BEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D607D29-D15B-4F26-ACB3-4EE7EF138BEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
