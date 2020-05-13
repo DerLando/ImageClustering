@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,9 +24,31 @@ namespace ImageClusteringLibrary.IO
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public static ColorCielab GetCielabPixel(this Bitmap bitmap, int x, int y)
+        public static ColorCielab GetCielabColor(this Bitmap bitmap, int x, int y)
         {
             return ColorCielab.FromRgb(new RgbVector(bitmap.GetPixel(x, y)));
+        }
+
+        /// <summary>
+        /// Gets the color value of a pixel in CIELAB space
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static ColorCielab GetCielabColor(this Bitmap bitmap, in Vector2<int> position)
+        {
+            return ColorCielab.FromRgb(new RgbVector(bitmap.GetPixel(position.X, position.Y)));
+        }
+
+        /// <summary>
+        /// Gets the pixel in CIELAB space
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static PixelLabxy GetCielabPixel(this Bitmap bitmap, in Vector2<int> position)
+        {
+            return new PixelLabxy(bitmap.GetCielabColor(position), position);
         }
 
         public static ImagePixel[] ToPixels(this Bitmap bitmap)
@@ -55,6 +79,93 @@ namespace ImageClusteringLibrary.IO
 
             // return result
             return pixels;
+        }
+
+        /// <summary>
+        /// Converts a bitmap to an array of position vectors, for all pixel positions
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <returns></returns>
+        public static Vector2<int>[] ToPositionVectors(this Bitmap bitmap)
+        {
+            var width = bitmap.Width;
+            var height = bitmap.Height;
+            var positions = new Vector2<int>[width * height];
+
+            // iterate over image width
+            for (int i = 0; i < width; i++)
+            {
+                // set array offset
+                var offset = height * i;
+                for (int j = 0; j < height; j++)
+                {
+                    // create new imagepixel and insert in array
+                    positions[offset + j] = new Vector2<int>(i, j);
+                }
+            }
+
+            // return result
+            return positions;
+        }
+
+        /// <summary>
+        /// Converts a bitmap to an array of cielab pixels
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <returns></returns>
+        public static PixelLabxy[] ToCielabPixels(this Bitmap bitmap)
+        {
+            var width = bitmap.Width;
+            var height = bitmap.Height;
+            var pixels = new PixelLabxy[width * height];
+
+            // iterate over image width
+            for (int i = 0; i < width; i++)
+            {
+                // set array offset
+                var offset = height * i;
+                for (int j = 0; j < height; j++)
+                {
+                    // create new imagepixel and insert in array
+                    pixels[offset + j] = new PixelLabxy(bitmap.GetCielabColor(i, j), new Vector2<int>(i, j));
+                }
+            }
+
+            // return result
+            return pixels;
+        }
+
+        /// <summary>
+        /// Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        public static Bitmap ResizeImage(this Image image, int width, int height)
+        {
+            // https://stackoverflow.com/a/24199315
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
     }
 }

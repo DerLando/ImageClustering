@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ImageClusteringLibrary.Data;
+using ImageClusteringLibrary.Data.Collections;
 using ImageClusteringLibrary.IO;
 
 namespace ImageClusteringLibrary.Algorithms
@@ -45,39 +46,6 @@ namespace ImageClusteringLibrary.Algorithms
         }
 
         /// <summary>
-        /// Calculates a grid of regular spaced points in the given
-        /// rectangle bounds
-        /// </summary>
-        /// <param name="rect"></param>
-        /// <param name="k">number of points in the grid</param>
-        /// <returns></returns>
-        public static Vector2<int>[] CalculateGrid(Rectangle rect, int k)
-        {
-            var positions = new Vector2<int>[k];
-
-            // width * aspect_ratio * height = k
-
-            int kS = (int)Math.Sqrt(k);
-            int xCount = rect.Width / k;
-            int yCount = k / xCount;
-            int cellWidth = rect.Width / xCount;
-            int cellHeight = rect.Height / yCount;
-
-            for (int i = 0; i < xCount; i++)
-            {
-                var offset = i * yCount;
-                var xPosition = cellWidth * (i + 0.5);
-
-                for (int j = 0; j < yCount; j++)
-                {
-                    positions[offset + j] = new Vector2<int>((int)xPosition, (int)(cellHeight * (j + 0.5)));
-                }
-            }
-
-            return positions;
-        }
-
-        /// <summary>
         /// Compute the gradient value of the pixel at the given x,y coordinates
         /// </summary>
         /// <param name="bitmap"></param>
@@ -86,8 +54,8 @@ namespace ImageClusteringLibrary.Algorithms
         /// <returns></returns>
         private static double PixelGradient(Bitmap bitmap, int x, int y)
         {
-            var n1 = ColorNorm(bitmap.GetCielabPixel(x + 1, y) - bitmap.GetCielabPixel(x - 1, y));
-            var n2 = ColorNorm(bitmap.GetCielabPixel(x, y + 1) - bitmap.GetCielabPixel(x, y - 1));
+            var n1 = ColorNorm(bitmap.GetCielabColor(x + 1, y) - bitmap.GetCielabColor(x - 1, y));
+            var n2 = ColorNorm(bitmap.GetCielabColor(x, y + 1) - bitmap.GetCielabColor(x, y - 1));
 
             return n1 * n1 + n2 * n2;
         }
@@ -106,21 +74,37 @@ namespace ImageClusteringLibrary.Algorithms
             var smallestGradient = 1000000.0;
 
             // check 3x3 neighbours
-            for (int i = -1; i < 2; i++)
+            var grid = PositionHelper.GetNeighboringPositions(position, 3);
+            foreach (var gridPosition in grid)
             {
-                var xPosition = position.X + i;
+                // check if bad grid position
+                if (position.X < 0 | position.Y < 0) continue;
 
-                for (int j = -1; j < 2; j++)
+                var gradient = PixelGradient(bitmap, gridPosition.X, gridPosition.Y);
+                if (gradient < smallestGradient)
                 {
-                    var yPosition = position.Y + i;
-
-                    var gradient = PixelGradient(bitmap, xPosition, yPosition);
-                    if (gradient < smallestGradient)
-                    {
-                        smallestGradient = gradient;
-                        result = new Vector2<int>(xPosition, yPosition);
-                    }
+                    smallestGradient = gradient;
+                    result = gridPosition;
                 }
+            }
+
+            return result;
+        }
+
+        private static int GetClosestIndex(Bitmap bitmap, in PixelLabxy testPixel, int[] indices, SuperPixelCollection pixels, double m, double S)
+        {
+            var smallestDistance = 1000000.0;
+            var result = -1;
+
+            foreach (var index in indices)
+            {
+                var superPixel = pixels.GetSuperPixel(index);
+                var distance = PixelDistance(testPixel, bitmap.GetCielabPixel(superPixel.Centroid), m, S);
+
+                if(distance > smallestDistance) continue;
+
+                smallestDistance = distance;
+                result = index;
             }
 
             return result;
@@ -133,16 +117,21 @@ namespace ImageClusteringLibrary.Algorithms
         /// <param name="pixelCount">Number of super pixels to generate</param>
         /// <param name="compactness">Variable to determine how compact superpixels should be
         /// valid values are between 1 and 20, 10 is generally a good middle-ground to choose</param>
-        public static void Solve(Bitmap bitmap, int pixelCount, int compactness)
+        public static SuperPixelCollection Solve(Bitmap bitmap, int pixelCount, int compactness)
         {
             // initial values
             var K = pixelCount;
             var N = bitmap.Width * bitmap.Height;
             var m = compactness;
             var S = (int)Math.Sqrt(N / K);
+            // double S, forced to be odd
+            var S2 = (S * 2) % 2 == 1 ? S * 2 : (S * 2) + 1;
 
-            // calculate grid
-            var grid = CalculateGrid(bitmap.GetRectangle(), K);
+            // translate image pixels to labxy pixels
+            var pixels = bitmap.ToCielabPixels();
+
+            // calculate point grid with k regularly spaced points
+            var grid = PositionHelper.CalculateGrid(bitmap.GetRectangle(), K);
 
             // iterate over grid
             for (int i = 0; i < K; i++)
@@ -151,22 +140,43 @@ namespace ImageClusteringLibrary.Algorithms
                 grid[i] = GetSmallestGradient(bitmap, grid[i]);
             }
 
-            // iterate of clusters again
-            for (int i = 0; i < K; i++)
-            {
-                var centroid = new PixelLabxy(bitmap.GetCielabPixel(grid[i].X, grid[i].Y), grid[i]);
-                var positions = PositionHelper.GetNeighboringPositions(grid[i], 2 * S);
+            // initialize initial superpixel collection from grid
+            var superPixels =
+                new SuperPixelCollection((from centroid in grid select new SuperPixel(centroid)).ToArray(), S);
 
-                // iterate over positions
-                foreach (var position in positions)
+            // safety iterator
+            var safetyIterator = 0;
+
+            // run optimization loop on superpixel collection
+            while (true)
+            {
+                // reset super pixel containers
+                superPixels.ResetPixels();
+
+                // iterate over all pixels
+                foreach (var pixel in pixels)
                 {
-                    // calculate distance in labxy space
-                    var labxy = new PixelLabxy(bitmap.GetCielabPixel(position.X, position.Y), position);
-                    var distance = PixelDistance(centroid, labxy, m, S);
+                    // query 2Sx2S grid around the current pixel for all superpixel centroids in it
+                    var indices = superPixels.GetContainingSuperPixelIndices(pixel.Position);
+
+                    // get the closest index
+                    var closestIndex = GetClosestIndex(bitmap, pixel, indices, superPixels, m, S);
+
+                    // Add pixel to superpixel collection at the closest superpixel index
+                    superPixels.AddPosition(closestIndex, pixel.Position);
                 }
-                // TODO: Calculate distance to cluster centroid
-                // TODO: Choose pixels to add to cluster, depending on distance function result
+
+                // update centroids
+                if(!superPixels.UpdatePixelCentroids()) break;
+
+                // check safety
+                if(safetyIterator > 100) break;
+
+                safetyIterator++;
+
             }
+
+            return superPixels;
         }
     }
 }

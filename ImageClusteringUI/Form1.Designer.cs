@@ -36,9 +36,10 @@
             // 
             // btn_Next
             // 
-            this.btn_Next.Location = new System.Drawing.Point(416, 415);
+            this.btn_Next.Location = new System.Drawing.Point(468, 519);
+            this.btn_Next.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Next.Name = "btn_Next";
-            this.btn_Next.Size = new System.Drawing.Size(372, 23);
+            this.btn_Next.Size = new System.Drawing.Size(418, 29);
             this.btn_Next.TabIndex = 0;
             this.btn_Next.Text = "Next";
             this.btn_Next.UseVisualStyleBackColor = true;
@@ -46,18 +47,20 @@
             // 
             // pB_Result
             // 
-            this.pB_Result.Location = new System.Drawing.Point(12, 12);
+            this.pB_Result.Location = new System.Drawing.Point(14, 15);
+            this.pB_Result.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pB_Result.Name = "pB_Result";
-            this.pB_Result.Size = new System.Drawing.Size(776, 397);
+            this.pB_Result.Size = new System.Drawing.Size(400, 300);
             this.pB_Result.TabIndex = 1;
             this.pB_Result.TabStop = false;
             this.pB_Result.Click += new System.EventHandler(this.pB_Result_Click);
             // 
             // btn_Reset
             // 
-            this.btn_Reset.Location = new System.Drawing.Point(12, 414);
+            this.btn_Reset.Location = new System.Drawing.Point(14, 518);
+            this.btn_Reset.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Reset.Name = "btn_Reset";
-            this.btn_Reset.Size = new System.Drawing.Size(398, 23);
+            this.btn_Reset.Size = new System.Drawing.Size(448, 29);
             this.btn_Reset.TabIndex = 2;
             this.btn_Reset.Text = "Reset";
             this.btn_Reset.UseVisualStyleBackColor = true;
@@ -65,12 +68,13 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(900, 562);
             this.Controls.Add(this.btn_Reset);
             this.Controls.Add(this.pB_Result);
             this.Controls.Add(this.btn_Next);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.pB_Result)).EndInit();

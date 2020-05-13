@@ -33,7 +33,7 @@ namespace ImageClusteringLibrary.Data
         /// Add a pixel position to this super pixel
         /// </summary>
         /// <param name="position"></param>
-        public void AddPositions(in Vector2<int> position) { _positions.Add(position);}
+        public void AddPosition(in Vector2<int> position) { _positions.Add(position);}
 
         /// <summary>
         /// Updates the centroid of the superpixel to the mean of all pixel
@@ -83,6 +83,17 @@ namespace ImageClusteringLibrary.Data
 
             // return result
             return boundary.ToArray();
+        }
+
+        /// <summary>
+        /// Checks if a position is a valid candidate to be contained in this super pixel
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="distance">Maximum distance for a position away from the centroid to be considered a valid candidate</param>
+        /// <returns>True if the position is a valid candidate, False if not</returns>
+        public bool IsValidPositionCandidate(in Vector2<int> position, int distance)
+        {
+            return Math.Abs(position.X - _centroid.X) <= distance && Math.Abs(position.Y - _centroid.Y) <= distance;
         }
     }
 }

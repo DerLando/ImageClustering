@@ -17,7 +17,7 @@ namespace ImageClusteringLibrary.Tests
             var grid = PositionHelper.GetNeighboringPositions(superPixel.Centroid, 11);
             foreach (var position in grid)
             {
-                superPixel.AddPositions(position);
+                superPixel.AddPosition(position);
             }
 
             // Act

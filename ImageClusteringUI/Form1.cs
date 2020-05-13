@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ImageClusteringLibrary.Algorithms;
+using ImageClusteringLibrary.IO;
 
 namespace ImageClusteringUI
 {
@@ -16,6 +17,7 @@ namespace ImageClusteringUI
         private Solver _solver;
         private int clusterCount = 20;
         private string feininger = "D:\\Desktop\\cornwall_stock.jpg";
+        private Bitmap image;
 
         public Form1()
         {
@@ -23,7 +25,23 @@ namespace ImageClusteringUI
 
             _solver = new Solver(feininger, clusterCount);
             _solver.Next();
-            pB_Result.Image = _solver.GetClusterImage();
+            //pB_Result.Image = _solver.GetClusterImage();
+
+            image = (new Bitmap(feininger)).ResizeImage(400, 300);
+
+            var collection = SuperPixelSolver.Solve(image, 50, 10);
+            var boundaries = collection.GetPixelBoundaryPositions();
+
+            foreach (var boundaryCollection in boundaries)
+            {
+                foreach (var position in boundaryCollection)
+                {
+                    image.SetPixel(position.X, position.Y, Color.Red);
+                }
+            }
+
+            pB_Result.Image = image;
+
 
             // DEBUG:
             //var test = SuperPixelSolver.CalculateGrid(new Rectangle(0, 0, 70, 100), 20);
