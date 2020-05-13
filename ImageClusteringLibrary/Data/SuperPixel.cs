@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,9 @@ namespace ImageClusteringLibrary.Data
         /// <summary>
         /// Pixel positions related to this super pixel
         /// </summary>
-        private List<Position> _positions = new List<Position>();
+        //private List<Position> _positions = new List<Position>();
+
+        private ConcurrentBag<Position> _positions = new ConcurrentBag<Position>();
 
         /// <summary>
         /// The logical center position of the super pixel
@@ -63,7 +66,9 @@ namespace ImageClusteringLibrary.Data
         /// <summary>
         /// Clears all stored pixel positions, the centroid stays the same
         /// </summary>
-        public void Reset() { _positions = new List<Position>();}
+        //public void Reset() { _positions = new List<Position>();}
+        public void Reset() { _positions = new ConcurrentBag<Position>(); }
+
 
         public Position[] GetBoundaryPositions()
         {
@@ -71,20 +76,32 @@ namespace ImageClusteringLibrary.Data
             // are by definition inner pixels
 
             // new list to store boundary pixels
-            var boundary = new List<Position>();
+            var boundary = new ConcurrentBag<Position>();
 
             // iterate over positions
-            foreach (var position in _positions)
+            Parallel.ForEach(_positions, (position) =>
             {
                 // get 3x3 grid points around this
                 var grid = PositionHelper.GetNeighboringPositions(position, 3);
 
                 // test if all grid points are contained inside of super pixel
-                if (grid.All(g => _positions.Contains(g))) continue;
+                if (grid.All(g => _positions.Contains(g))) return;
 
                 // add test position to boundary list
                 boundary.Add(position);
-            }
+            });
+
+            //foreach (var position in _positions)
+            //{
+            //    // get 3x3 grid points around this
+            //    var grid = PositionHelper.GetNeighboringPositions(position, 3);
+
+            //    // test if all grid points are contained inside of super pixel
+            //    if (grid.All(g => _positions.Contains(g))) continue;
+
+            //    // add test position to boundary list
+            //    boundary.Add(position);
+            //}
 
             // return result
             return boundary.ToArray();

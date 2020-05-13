@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,8 @@ namespace ImageClusteringLibrary.Data.Collections
         /// </summary>
         private readonly PixelLabxy[] _pixels;
 
+        public int Count => _pixels.Length;
+
         public ImagePixelLabxyCollection(int width, int height, PixelLabxy[] pixels)
         {
             _width = width;
@@ -33,5 +36,7 @@ namespace ImageClusteringLibrary.Data.Collections
         {
             return _pixels[_height * position.Vector.X + position.Vector.Y];
         }
+
+        public IReadOnlyCollection<PixelLabxy> GetPixels() => Array.AsReadOnly(_pixels);
     }
 }

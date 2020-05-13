@@ -90,15 +90,15 @@ namespace ImageClusteringLibrary.Algorithms
             return result;
         }
 
-        private static int GetClosestIndex(Bitmap bitmap, in PixelLabxy testPixel, int[] indices, SuperPixelCollection pixels, double m, double S)
+        private static int GetClosestIndex(in PixelLabxy testPixel, int[] indices, SuperPixelCollection superPixels, ImagePixelLabxyCollection pixels, double m, double S)
         {
             var smallestDistance = 1000000.0;
             var result = -1;
 
             foreach (var index in indices)
             {
-                var superPixel = pixels.GetSuperPixel(index);
-                var distance = PixelDistance(testPixel, bitmap.GetCielabPixel(superPixel.Centroid), m, S);
+                var superPixel = superPixels.GetSuperPixel(index);
+                var distance = PixelDistance(testPixel, pixels.GetPixel(superPixel.Centroid), m, S);
 
                 if(distance > smallestDistance) continue;
 
@@ -127,7 +127,7 @@ namespace ImageClusteringLibrary.Algorithms
             var S2 = (S * 2) % 2 == 1 ? S * 2 : (S * 2) + 1;
 
             // translate image pixels to labxy pixels
-            var pixels = bitmap.ToCielabPixels();
+            var pixels = new ImagePixelLabxyCollection(bitmap.Width, bitmap.Height, bitmap.ToCielabPixels());
 
             // calculate point grid with k regularly spaced points
             var grid = PositionHelper.CalculateGrid(bitmap.GetRectangle(), K);
@@ -158,13 +158,13 @@ namespace ImageClusteringLibrary.Algorithms
                 // iterate over all pixels
                 if (parallel)
                 {
-                    Parallel.ForEach(pixels, (pixel) =>
+                    Parallel.ForEach(pixels.GetPixels(), (pixel) =>
                     {
                         // query 2Sx2S grid around the current pixel for all superpixel centroids in it
                         var indices = superPixels.GetContainingSuperPixelIndices(pixel.Position);
 
                         // get the closest index
-                        var closestIndex = GetClosestIndex(bitmap, pixel, indices, superPixels, m, S);
+                        var closestIndex = GetClosestIndex(pixel, indices, superPixels, pixels, m, S);
 
                         if (closestIndex == -1)
                         {
@@ -179,13 +179,13 @@ namespace ImageClusteringLibrary.Algorithms
 
                 else
                 {
-                    foreach (var pixel in pixels)
+                    foreach (var pixel in pixels.GetPixels())
                     {
                         // query 2Sx2S grid around the current pixel for all superpixel centroids in it
                         var indices = superPixels.GetContainingSuperPixelIndices(pixel.Position);
 
                         // get the closest index
-                        var closestIndex = GetClosestIndex(bitmap, pixel, indices, superPixels, m, S);
+                        var closestIndex = GetClosestIndex(pixel, indices, superPixels, pixels, m, S);
 
                         if (closestIndex == -1)
                         {
@@ -203,7 +203,7 @@ namespace ImageClusteringLibrary.Algorithms
                 if (!superPixels.UpdatePixelCentroids()) break;
 
                 // check safety
-                if (safetyIterator > 100)
+                if (safetyIterator > 300)
                 {
                     break;
                 }

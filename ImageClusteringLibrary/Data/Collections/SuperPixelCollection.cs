@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -87,18 +88,15 @@ namespace ImageClusteringLibrary.Data.Collections
             return _superPixels.Length / changed < 10; // less then 10% change
         }
 
-        public List<Position[]> GetPixelBoundaryPositions()
+        public Position[][] GetPixelBoundaryPositions()
         {
             // empty list to store pixel boundaries
-            var boundaries = new List<Position[]>();
+            var boundaries = new ConcurrentBag<Position[]>();
 
             // iterate over super pixels
-            foreach (var superPixel in _superPixels)
-            {
-                boundaries.Add(superPixel.GetBoundaryPositions());
-            }
+            Parallel.ForEach(_superPixels, (superPixel) => { boundaries.Add(superPixel.GetBoundaryPositions()); });
 
-            return boundaries;
+            return boundaries.ToArray();
         }
 
     }
