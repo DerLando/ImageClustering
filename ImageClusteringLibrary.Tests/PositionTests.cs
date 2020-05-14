@@ -78,5 +78,22 @@ namespace ImageClusteringLibrary.Tests
             // Assert
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void PositionHelper_IsInsideGridShouldWork()
+        {
+            // Arrange
+            var center = new Position(5, 5);
+
+            // Assert
+            Assert.IsTrue(PositionHelper.IsPositionInGridAroundOtherPosition(new Position(1, 1), center, 4));
+            Assert.IsFalse(PositionHelper.IsPositionInGridAroundOtherPosition(new Position(0, 0), center, 4));
+            Assert.IsTrue(PositionHelper.IsPositionInGridAroundOtherPosition(new Position(9, 9), center, 4));
+            Assert.IsFalse(PositionHelper.IsPositionInGridAroundOtherPosition(new Position(10, 10), center, 4));
+            Assert.IsTrue(PositionHelper.IsPositionInGridAroundOtherPosition(new Position(9, 3), center, 4));
+
+
+
+        }
     }
 }

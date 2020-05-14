@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,6 +63,7 @@ namespace ImageClusteringLibrary.Data.Collections
                 indices.Add(i);
             }
 
+            Debug.Assert(indices.Count < 5);
             return indices.ToArray();
         }
 
@@ -85,7 +87,7 @@ namespace ImageClusteringLibrary.Data.Collections
                 }
             }
 
-            return _superPixels.Length / changed < 10; // less then 10% change
+            return _superPixels.Length / changed < 20; // less then 20% change
         }
 
         public Position[][] GetPixelBoundaryPositions()
@@ -97,6 +99,11 @@ namespace ImageClusteringLibrary.Data.Collections
             Parallel.ForEach(_superPixels, (superPixel) => { boundaries.Add(superPixel.GetBoundaryPositions()); });
 
             return boundaries.ToArray();
+        }
+
+        public IReadOnlyCollection<SuperPixel> GetPixels()
+        {
+            return Array.AsReadOnly(_superPixels);
         }
 
     }

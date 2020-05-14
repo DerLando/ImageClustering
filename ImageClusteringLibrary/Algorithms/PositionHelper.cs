@@ -91,5 +91,20 @@ namespace ImageClusteringLibrary.Algorithms
 
             return positions;
         }
+
+        /// <summary>
+        /// Determines if the first position is inside the grid around the second position
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="gridSize"></param>
+        /// <returns></returns>
+        public static bool IsPositionInGridAroundOtherPosition(in Position a, in Position b, int gridSize)
+        {
+            var deltaX = Math.Abs(a.Vector.X - b.Vector.X);
+            var deltaY = Math.Abs(a.Vector.Y - b.Vector.Y);
+
+            return deltaX <= gridSize && deltaY <= gridSize;
+        }
     }
 }

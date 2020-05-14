@@ -47,6 +47,7 @@
     <Compile Include="Algorithms\ClusterRandomFunction.cs" />
     <Compile Include="Algorithms\PositionHelper.cs" />
     <Compile Include="Algorithms\Solver.cs" />
+    <Compile Include="Algorithms\SuperPixelSegmentor.cs" />
     <Compile Include="Algorithms\SuperPixelSolver.cs" />
     <Compile Include="Data\Collections\ImagePixelLabxyCollection.cs" />
     <Compile Include="Data\Collections\SuperPixelCollection.cs" />
@@ -55,10 +56,12 @@
     <Compile Include="Data\ColorXYZ.cs" />
     <Compile Include="Data\DataExtensions.cs" />
     <Compile Include="Data\ImagePixel.cs" />
+    <Compile Include="Data\LabelPixel.cs" />
     <Compile Include="Data\PixelCluster.cs" />
     <Compile Include="Data\PixelLabxy.cs" />
     <Compile Include="Data\Position.cs" />
     <Compile Include="Data\SuperPixel.cs" />
+    <Compile Include="Data\SuperPixelData.cs" />
     <Compile Include="Data\Vector2.cs" />
     <Compile Include="Data\RgbVector.cs" />
     <Compile Include="IO\BitmapExtensions.cs" />

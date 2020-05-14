@@ -27,7 +27,13 @@ namespace ImageClusteringLibrary.Data
         /// </summary>
         public readonly double Value;
 
-        private ColorHsv(double hue, double saturation, double value)
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="hue">Hue value between 0 and 360</param>
+        /// <param name="saturation">Saturation value between 0 and 1</param>
+        /// <param name="value">Value value between 0 and 1</param>
+        public ColorHsv(double hue, double saturation, double value)
         {
             Hue = hue;
             Saturation = saturation;

@@ -85,6 +85,7 @@ namespace ImageClusteringLibrary.Data
                 var grid = PositionHelper.GetNeighboringPositions(position, 3);
 
                 // test if all grid points are contained inside of super pixel
+                // TODO: THis contains test is suuuper slow, maybe because _positions is a concurrent bag?
                 if (grid.All(g => _positions.Contains(g))) return;
 
                 // add test position to boundary list
@@ -117,6 +118,11 @@ namespace ImageClusteringLibrary.Data
         {
             return Math.Abs(position.Vector.X - _centroid.Vector.X) <= distance &&
                    Math.Abs(position.Vector.Y - _centroid.Vector.Y) <= distance;
+        }
+
+        public IReadOnlyCollection<Position> GetPositions()
+        {
+            return Array.AsReadOnly(_positions.ToArray());
         }
     }
 }

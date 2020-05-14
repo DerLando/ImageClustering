@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ImageClusteringLibrary.Algorithms;
+using ImageClusteringLibrary.Data;
 using ImageClusteringLibrary.IO;
 
 namespace ImageClusteringUI
@@ -29,16 +30,31 @@ namespace ImageClusteringUI
 
             image = (new Bitmap(feininger)).ResizeImage(400, 300);
 
-            var collection = SuperPixelSolver.Solve(image, 50, 10);
-            var boundaries = collection.GetPixelBoundaryPositions();
+            var superPixelCount = 50;
 
-            foreach (var boundaryCollection in boundaries)
+            var colorCount = superPixelCount / 5;
+            var hueStep = 360 / colorCount;
+            var colors =
+                (from i in Enumerable.Range(0, colorCount) select new ColorHsv(hueStep * i, 1, 1).AsColor())
+                .ToArray();
+
+
+
+            var collection = SuperPixelSolver.Solve(image, 1000, 10);
+
+            int iter = 0;
+            foreach (var superPixelData in collection)
             {
-                foreach (var position in boundaryCollection)
+                var color = colors[iter % colorCount];
+
+                foreach (var position in superPixelData.Positions)
                 {
-                    image.SetPixel(position.Vector.X, position.Vector.Y, Color.Red);
+                    image.SetPixel(position.Vector.X, position.Vector.Y, color);
                 }
+
+                iter++;
             }
+
 
             pB_Result.Image = image;
 

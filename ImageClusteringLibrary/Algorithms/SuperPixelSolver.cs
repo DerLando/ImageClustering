@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -116,7 +117,7 @@ namespace ImageClusteringLibrary.Algorithms
         /// <param name="pixelCount">Number of super pixels to generate</param>
         /// <param name="compactness">Variable to determine how compact superpixels should be
         /// valid values are between 1 and 20, 10 is generally a good middle-ground to choose</param>
-        public static SuperPixelCollection Solve(Bitmap bitmap, int pixelCount, int compactness)
+        public static IReadOnlyCollection<SuperPixelData> Solve(Bitmap bitmap, int pixelCount, int compactness)
         {
             // initial values
             var K = pixelCount;
@@ -126,8 +127,8 @@ namespace ImageClusteringLibrary.Algorithms
             // double S, forced to be odd
             var S2 = (S * 2) % 2 == 1 ? S * 2 : (S * 2) + 1;
 
-            // translate image pixels to labxy pixels
-            var pixels = new ImagePixelLabxyCollection(bitmap.Width, bitmap.Height, bitmap.ToCielabPixels());
+            // initialize stopwatch
+            var watch = Stopwatch.StartNew();
 
             // calculate point grid with k regularly spaced points
             var grid = PositionHelper.CalculateGrid(bitmap.GetRectangle(), K);
@@ -139,80 +140,39 @@ namespace ImageClusteringLibrary.Algorithms
                 grid[i] = GetSmallestGradient(bitmap, grid[i]);
             }
 
-            // initialize initial superpixel collection from grid
-            var superPixels =
-                new SuperPixelCollection((from centroid in grid select new SuperPixel(centroid)).ToArray(), S);
+            // calculate grid creation time
+            watch.Stop();
+            Console.WriteLine($"Took {watch.ElapsedMilliseconds}ms to calculate initial grid of cluster centroids");
+            watch = Stopwatch.StartNew();
 
-            // safety iterator
-            var safetyIterator = 0;
+            // create the segmentor instance
+            var segmentor = new SuperPixelSegmentor(bitmap.ToCielabPixels(), grid, m, N, K, bitmap.Height);
 
-            // parallel debug for now
-            var parallel = true;
+            // calculate segmentor initialization time
+            watch.Stop();
+            Console.WriteLine($"Took {watch.ElapsedMilliseconds}ms to initialize segmentor");
+            watch = Stopwatch.StartNew();
 
-            // run optimization loop on superpixel collection
-            while (true)
+            // keep optimizing until error threshold is reached
+            double error = double.MaxValue;
+            while (error > 1)
             {
-                // reset super pixel containers
-                superPixels.ResetPixels();
-
-                // iterate over all pixels
-                if (parallel)
-                {
-                    Parallel.ForEach(pixels.GetPixels(), (pixel) =>
-                    {
-                        // query 2Sx2S grid around the current pixel for all superpixel centroids in it
-                        var indices = superPixels.GetContainingSuperPixelIndices(pixel.Position);
-
-                        // get the closest index
-                        var closestIndex = GetClosestIndex(pixel, indices, superPixels, pixels, m, S);
-
-                        if (closestIndex == -1)
-                        {
-                            //TODO: THis is bad, need to fix is!
-                            return;
-                        }
-
-                        // Add pixel to superpixel collection at the closest superpixel index
-                        superPixels.AddPosition(closestIndex, pixel.Position);
-                    });
-                }
-
-                else
-                {
-                    foreach (var pixel in pixels.GetPixels())
-                    {
-                        // query 2Sx2S grid around the current pixel for all superpixel centroids in it
-                        var indices = superPixels.GetContainingSuperPixelIndices(pixel.Position);
-
-                        // get the closest index
-                        var closestIndex = GetClosestIndex(pixel, indices, superPixels, pixels, m, S);
-
-                        if (closestIndex == -1)
-                        {
-                            //TODO: THis is bad, need to fix is!
-                            continue;
-                        }
-
-                        // Add pixel to superpixel collection at the closest superpixel index
-                        superPixels.AddPosition(closestIndex, pixel.Position);
-                    }
-
-                }
-
-                // update centroids
-                if (!superPixels.UpdatePixelCentroids()) break;
-
-                // check safety
-                if (safetyIterator > 300)
-                {
-                    break;
-                }
-
-                safetyIterator++;
-
+                error = segmentor.Next();
             }
 
-            return superPixels;
+            // calculate error minimization time
+            watch.Stop();
+            Console.WriteLine($"Took {watch.ElapsedMilliseconds}ms to minimize error");
+            watch = Stopwatch.StartNew();
+
+            // finalize inner pixel array
+            var result = segmentor.EnforceConnectivity();
+
+            // calculate finalization time
+            watch.Stop();
+            Console.WriteLine($"Took {watch.ElapsedMilliseconds}ms to finalize output");
+
+            return result;
         }
     }
 }
