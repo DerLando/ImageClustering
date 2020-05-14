@@ -16,7 +16,7 @@ namespace ImageClusteringUI
     public partial class Form1 : Form
     {
         private Solver _solver;
-        private int clusterCount = 20;
+        private int clusterCount = 8;
         private string feininger = "D:\\Desktop\\cornwall_stock.jpg";
         private Bitmap image;
 
@@ -30,31 +30,14 @@ namespace ImageClusteringUI
 
             image = (new Bitmap(feininger)).ResizeImage(400, 300);
 
-            var superPixelCount = 50;
+            var superPixels = SuperPixelSolver.Solve(image, 1000, 10);
 
-            var colorCount = superPixelCount / 5;
-            var hueStep = 360 / colorCount;
-            var colors =
-                (from i in Enumerable.Range(0, colorCount) select new ColorHsv(hueStep * i, 1, 1).AsColor())
-                .ToArray();
+            var test = new KMeansSegmentator(superPixels, clusterCount);
 
-
-
-            var collection = SuperPixelSolver.Solve(image, 1000, 10);
-
-            int iter = 0;
-            foreach (var superPixelData in collection)
+            foreach (var imagePixel in test.GetPixels())
             {
-                var color = colors[iter % colorCount];
-
-                foreach (var position in superPixelData.Positions)
-                {
-                    image.SetPixel(position.Vector.X, position.Vector.Y, color);
-                }
-
-                iter++;
+                image.SetPixel(imagePixel.Position.X, imagePixel.Position.Y, imagePixel.ColorRgb.AsColor());
             }
-
 
             pB_Result.Image = image;
 

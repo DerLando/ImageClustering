@@ -70,5 +70,29 @@ namespace ImageClusteringLibrary.Data
 
             return new ColorCielab(L, a, b);
         }
+
+        /// <summary>
+        /// Returns a copy of this color in XYZ space
+        /// </summary>
+        /// <returns></returns>
+        public ColorXyz AsColorXyz()
+        {
+            //Reference-X, Y and Z refer to specific illuminants and observers.
+            //Common reference values are available below in this same page.
+
+            var var_Y = (L + 16) / 116.0;
+            var var_X = a / 500.0 + var_Y;
+            var var_Z = var_Y - b / 200.0;
+
+            var_Y = Math.Pow(var_Y, 3) > 0.008856 ? Math.Pow(var_Y, 3): (var_Y - 16.0 / 116.0) / 7.787;
+            var_X = Math.Pow(var_X, 3) > 0.008856 ? Math.Pow(var_X, 3): (var_X - 16.0 / 116.0) / 7.787;
+            var_Z = Math.Pow(var_Z, 3) > 0.008856 ? Math.Pow(var_Z, 3): (var_Z - 16.0 / 116.0) / 7.787;
+
+            var X = var_X * _reference_x;
+            var Y = var_Y * _reference_y;
+            var Z = var_Z * _reference_z;
+
+            return new ColorXyz(X, Y, Z);
+        }
     }
 }

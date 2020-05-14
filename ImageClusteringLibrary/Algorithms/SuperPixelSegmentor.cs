@@ -14,12 +14,12 @@ namespace ImageClusteringLibrary.Algorithms
         /// All pixels of the initial image,
         /// Pixels are stored as columns (vertical scanlines)
         /// </summary>
-        private LabelPixel[] _pixels;
+        private readonly LabelData<PixelLabxy>[] _pixels;
 
         /// <summary>
         /// An array of all centroids of the super pixels
         /// </summary>
-        private PixelLabxy[] _superPixelCentroids;
+        private readonly PixelLabxy[] _superPixelCentroids;
 
         /// <summary>
         /// The height of the initial image
@@ -67,11 +67,11 @@ namespace ImageClusteringLibrary.Algorithms
         public SuperPixelSegmentor(IEnumerable<PixelLabxy> pixels, IEnumerable<Position> initialCentroids, int compactness, int pixelCount, int clusterCount, int imageHeight)
         {
             // initialize pixels array
-            _pixels = (from pixel in pixels select new LabelPixel(pixel)).ToArray();
+            _pixels = (from pixel in pixels select new LabelData<PixelLabxy>(pixel)).ToArray();
 
             // initialize centroids array, we need height for that
             _height = imageHeight;
-            _superPixelCentroids = (from centroid in initialCentroids select GetPixel(centroid).Pixel).ToArray();
+            _superPixelCentroids = (from centroid in initialCentroids select GetPixel(centroid).Data).ToArray();
 
             // set other values
             m = compactness;
@@ -121,7 +121,7 @@ namespace ImageClusteringLibrary.Algorithms
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public LabelPixel GetPixel(in Position position)
+        public LabelData<PixelLabxy> GetPixel(in Position position)
         {
             // go to the xth column and get the yth value of it
             return _pixels[_height * position.Vector.X + position.Vector.Y];
@@ -156,21 +156,21 @@ namespace ImageClusteringLibrary.Algorithms
                     var pixel = GetPixel(position);
 
                     // calculate the distance to the centroid
-                    var distance = pixel.Pixel.DistanceTo(superPixelCentroid, m, S);
+                    var distance = pixel.Data.DistanceTo(superPixelCentroid, m, S);
 
                     // test if distance is smaller than tagged distance
                     if(pixel.Distance < distance) continue;
 
                     // assign distance and index tag
                     pixel.Distance = distance;
-                    pixel.SuperPixelIndex = i;
+                    pixel.Label = i;
                 }
 
                 i++;
             }
         }
 
-        public List<PixelLabxy>[] CollectPixels()
+        private List<PixelLabxy>[] CollectPixels()
         {
             // TODO: Make parallel
             _isValidConnectivity = true;
@@ -193,7 +193,7 @@ namespace ImageClusteringLibrary.Algorithms
                 }
 
                 // assign the pixel to the correct position inside the super pixel array
-                pixels[labelPixel.SuperPixelIndex].Add(labelPixel.Pixel);
+                pixels[labelPixel.Label].Add(labelPixel.Data);
             }
 
             return pixels;
@@ -222,6 +222,12 @@ namespace ImageClusteringLibrary.Algorithms
             return error;
         }
 
+        /// <summary>
+        /// Gets the indices of super pixel centroids which are neighbors
+        /// to the given position.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
         private int[] GetNeighboringCentroidIndices(in Position position)
         {
             var indices = new ConcurrentStack<int>();
@@ -255,15 +261,15 @@ namespace ImageClusteringLibrary.Algorithms
                 if (pixel.IsLabeled) return;
 
                 // get neighboring centroid indices
-                var neighborIndices = GetNeighboringCentroidIndices(pixel.Pixel.Position);
+                var neighborIndices = GetNeighboringCentroidIndices(pixel.Data.Position);
 
                 // find biggest neighbor
                 var biggestNeighborIndex =
                     neighborIndices.OrderByDescending(index => collected[index].Count).FirstOrDefault();
 
                 // assign label
-                pixel.SuperPixelIndex = biggestNeighborIndex;
-                collected[biggestNeighborIndex].Add(pixel.Pixel);
+                pixel.Label = biggestNeighborIndex;
+                collected[biggestNeighborIndex].Add(pixel.Data);
             });
 
             return ConvertCollectedToIReadonly(collected);

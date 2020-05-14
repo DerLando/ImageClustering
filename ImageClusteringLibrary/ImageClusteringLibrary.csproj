@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithms\ClusterRandomFunction.cs" />
+    <Compile Include="Algorithms\KMeansSegmentator.cs" />
     <Compile Include="Algorithms\PositionHelper.cs" />
     <Compile Include="Algorithms\Solver.cs" />
     <Compile Include="Algorithms\SuperPixelSegmentor.cs" />
