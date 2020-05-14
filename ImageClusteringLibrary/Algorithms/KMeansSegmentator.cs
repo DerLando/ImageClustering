@@ -42,6 +42,24 @@ namespace ImageClusteringLibrary.Algorithms
             UpdateColorCentroids();
         }
 
+        private void ResetPixels()
+        {
+            Parallel.ForEach(_superPixels, (pixel) => pixel.Reset());
+        }
+
+        public double Next()
+        {
+            // reset pixels
+            ResetPixels();
+
+            // re-assign
+            AssignPixels();
+
+            // update centroids and return error
+            return UpdateColorCentroids();
+
+        }
+
         private List<RgbVector>[] CollectPixels()
         {
             var pixels = new List<RgbVector>[K];
@@ -126,7 +144,7 @@ namespace ImageClusteringLibrary.Algorithms
                 // can't do anything for unlabeled
                 if (!superPixel.IsLabeled) continue;
 
-                var color = superPixel.Data.Centroid.Lab.AsColorXyz().AsColorRgb().AsColor();
+                var color = _colorCentroids[superPixel.Label].AsColor();
 
                 // assign to correct position in array
                 foreach (var dataPosition in superPixel.Data.Positions)

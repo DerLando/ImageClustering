@@ -16,7 +16,7 @@ namespace ImageClusteringUI
     public partial class Form1 : Form
     {
         private Solver _solver;
-        private int clusterCount = 8;
+        private int clusterCount = 6;
         private string feininger = "D:\\Desktop\\cornwall_stock.jpg";
         private Bitmap image;
 
@@ -33,6 +33,12 @@ namespace ImageClusteringUI
             var superPixels = SuperPixelSolver.Solve(image, 1000, 10);
 
             var test = new KMeansSegmentator(superPixels, clusterCount);
+
+            var error = double.MaxValue;
+            while (error > 1)
+            {
+                error = test.Next();
+            }
 
             foreach (var imagePixel in test.GetPixels())
             {
