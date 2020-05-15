@@ -111,6 +111,35 @@ namespace ImageClusteringLibrary.Algorithms
         }
 
         /// <summary>
+        /// Emits a <see cref="SuperPixelSegmentor"/> to manually run the algorithm
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="pixelCount"></param>
+        /// <param name="compactness"></param>
+        /// <returns></returns>
+        public static SuperPixelSegmentor EmitSegmentor(Bitmap bitmap, int pixelCount, int compactness)
+        {
+            // initial values
+            var K = pixelCount;
+            var N = bitmap.Width * bitmap.Height;
+            var m = compactness;
+            var S = (int)Math.Sqrt(N / K);
+
+            // calculate point grid with k regularly spaced points
+            var grid = PositionHelper.CalculateGrid(bitmap.GetRectangle(), K);
+
+            // iterate over grid
+            for (int i = 0; i < K; i++)
+            {
+                // assign neighbor with smallest gradient to grid position
+                grid[i] = GetSmallestGradient(bitmap, grid[i]);
+            }
+
+            // create the segmentor instance
+            return new SuperPixelSegmentor(bitmap.ToCielabPixels(), grid, m, N, K, bitmap.Height);
+        }
+
+        /// <summary>
         /// Solve for a given image
         /// </summary>
         /// <param name="bitmap">Image to solve for</param>

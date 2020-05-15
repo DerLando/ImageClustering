@@ -13,6 +13,13 @@ namespace ImageClusteringLibrary.Algorithms
     /// </summary>
     public static class KMeansSolver
     {
+        public static KMeansSegmentator EmitKMeansSegmentator(Bitmap bitmap, IEnumerable<SuperPixelData> superPixels,
+            int clusterCount)
+        {
+            // create segmentator from super pixels
+            return new KMeansSegmentator(superPixels, clusterCount);
+        }
+
         /// <summary>
         /// Solves k-means clustering of the given image
         /// </summary>

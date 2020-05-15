@@ -6,6 +6,10 @@
         xmlns:local="clr-namespace:ImageClusteringUI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+<Window.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+</Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"></ColumnDefinition>
@@ -23,16 +27,18 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="20"></RowDefinition>
         </Grid.RowDefinitions>
 
         <!--image view-->
-        <Image x:Name="img" Grid.Column="2" Grid.Row="2"
-               Grid.ColumnSpan="3" Grid.RowSpan="3"
+        <Image x:Name="img" Grid.Column="2" Grid.Row="1"
+               Grid.ColumnSpan="4" Grid.RowSpan="5"
+               Stretch="Uniform" StretchDirection="DownOnly"
                Source="{Binding Image}"></Image>
 
         <!--superpixel settings-->
-        <StackPanel Grid.Column="3" Grid.Row="2">
+        <StackPanel Grid.Column="1" Grid.Row="2">
             <StackPanel Orientation="Vertical">
                 <Label Content="SuperPixel Count"></Label>
                 <TextBox Text="{Binding SuperPixelCount}"></TextBox>
@@ -44,18 +50,28 @@
         </StackPanel>
 
         <!--Kmeans cluster settings-->
-        <StackPanel Grid.Column="3" Grid.Row="3">
+        <StackPanel Grid.Column="1" Grid.Row="3">
             <StackPanel Orientation="Vertical">
                 <Label Content="K-Means Cluster count" />
                 <TextBox Text="{Binding KmeansClusterCount}"></TextBox>
             </StackPanel>
         </StackPanel>
 
-        <!--refresh and load image buttons-->
-        <StackPanel Grid.Column="3" Grid.Row="4">
+        <!--refresh and load and save image buttons-->
+        <StackPanel Grid.Column="1" Grid.Row="4">
             <Button Content="Select Image"></Button>
             <Button Content="Refresh"
                     Command="{Binding RefreshCommand}"></Button>
+            <Button Content="Save" Command="{Binding SaveCommand}"></Button>
         </StackPanel>
+
+        <!--progress bar-->
+        <Label Grid.Column="1" Grid.Row="6"
+            Content="{Binding CurrentWorkerTask}"></Label>
+        <ProgressBar Grid.Column="2" Grid.Row="6" Grid.ColumnSpan="4"
+            Minimum="0" Maximum="1"
+            Visibility="{Binding ShouldShowStatus, Converter={StaticResource BoolToVis}}"
+            Value="{Binding ProgressValue}"/>
+
     </Grid>
 </Window>
