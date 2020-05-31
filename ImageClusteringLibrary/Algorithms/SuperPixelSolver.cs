@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -202,6 +203,20 @@ namespace ImageClusteringLibrary.Algorithms
             Console.WriteLine($"Took {watch.ElapsedMilliseconds}ms to finalize output");
 
             return result;
+        }
+
+        public static IReadOnlyCollection<Position> SolveSuperPixelBoundaries(IEnumerable<SuperPixelData> superPixels)
+        {
+            // list to store all boundary positions
+            var boundaryPositions = new ConcurrentStack<Position>();
+
+            Parallel.ForEach(superPixels,
+                (superPixel) =>
+                {
+                    boundaryPositions.PushRange(PositionHelper.GetBoundaryPositions(superPixel.Positions).ToArray());
+                });
+
+            return boundaryPositions.ToArray();
         }
     }
 }

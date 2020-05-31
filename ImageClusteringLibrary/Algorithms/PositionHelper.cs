@@ -106,5 +106,55 @@ namespace ImageClusteringLibrary.Algorithms
 
             return deltaX <= gridSize && deltaY <= gridSize;
         }
+
+        /// <summary>
+        /// Gets all boundary positions in a given collection of positions.
+        /// Boundary positions are defined as not having a neighbor on every adjacent position
+        /// </summary>
+        /// <param name="positions"></param>
+        /// <returns></returns>
+        public static IEnumerable<Position> GetBoundaryPositions(IEnumerable<Position> positions)
+        {
+            // store positions as array
+            var posArray = positions.ToArray();
+
+            // create a dict do keep track of used positions
+            var positionContainment = new Dictionary<Position, bool>();
+
+            // empty list to store boundary positions
+            var boundaryPositions = new List<Position>();
+
+            // iterate over positions
+            foreach (var position in posArray)
+            {
+                // create a adjacent grid of positions around current position
+                var grid = GetNeighboringPositions(position, 3);
+
+                // array that stores a value for every grid positions containment
+                var areContained = new bool[9];
+
+                for (int i = 0; i < 9; i++)
+                {
+                    // easy way out -> position has been tested and is in dictionary
+                    if (positionContainment.ContainsKey(grid[i]))
+                        areContained[i] = positionContainment[grid[i]];
+
+                    // if not, we have to calculate containment
+                    else
+                    {
+                        areContained[i] = posArray.Contains(grid[i]);
+                        positionContainment[grid[i]] = areContained[i];
+                    }
+                }
+
+                // if any position is not contained in the grid, we define the tested position as boundary
+                if(areContained.All(b => b))
+                    continue;
+
+                boundaryPositions.Add(position);
+            }
+
+            return boundaryPositions;
+        }
     }
 }

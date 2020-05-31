@@ -4,10 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageClusteringUI"
+        xmlns:viewModels="clr-namespace:ImageClusteringUI.ViewModels"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 <Window.Resources>
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    <DataTemplate DataType="{x:Type viewModels:ClusterColorViewModel}">
+        <Button Background="{Binding Brush}" BorderBrush="{Binding Brush}"
+                Content="Test" Command="{Binding OpenColorPickerCommand}"/>
+    </DataTemplate>
 </Window.Resources>
 
     <Grid>
@@ -59,13 +66,18 @@
 
         <!--refresh and load and save image buttons-->
         <StackPanel Grid.Column="1" Grid.Row="4">
-            <Button Content="Select Image"></Button>
+            <Button Content="Select Image"
+                    Command="{Binding SelectImageCommand}"></Button>
             <Button Content="Refresh"
                     Command="{Binding RefreshCommand}"></Button>
             <Button Content="Save" Command="{Binding SaveCommand}"></Button>
         </StackPanel>
 
-        <!--progress bar-->
+        <!--colors itemcontrol-->
+        <ItemsControl ItemsSource="{Binding ClusterColors}"
+                      Grid.Row="5" Grid.Column="1"/>
+
+            <!--progress bar-->
         <Label Grid.Column="1" Grid.Row="6"
             Content="{Binding CurrentWorkerTask}"></Label>
         <ProgressBar Grid.Column="2" Grid.Row="6" Grid.ColumnSpan="4"

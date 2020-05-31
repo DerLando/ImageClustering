@@ -91,8 +91,21 @@ namespace ImageClusteringLibrary.Tests
             Assert.IsTrue(PositionHelper.IsPositionInGridAroundOtherPosition(new Position(9, 9), center, 4));
             Assert.IsFalse(PositionHelper.IsPositionInGridAroundOtherPosition(new Position(10, 10), center, 4));
             Assert.IsTrue(PositionHelper.IsPositionInGridAroundOtherPosition(new Position(9, 3), center, 4));
+        }
 
+        [TestMethod]
+        public void PositionHelper_GetBoundaryPosition_ShouldWorkForSimpleCases()
+        {
+            // Arrange
+            var center = new Position(5, 5);
+            var grid = PositionHelper.GetNeighboringPositions(center, 11);
 
+            // Act
+            var boundary = PositionHelper.GetBoundaryPositions(grid).ToArray();
+
+            // Assert
+            // should have exactly 40 boundary pixels
+            Assert.AreEqual(boundary.Length, 40);
 
         }
     }

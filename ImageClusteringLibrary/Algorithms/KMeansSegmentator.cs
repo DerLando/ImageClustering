@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -154,6 +155,29 @@ namespace ImageClusteringLibrary.Algorithms
             }
 
             return pixels;
+        }
+
+        /// <summary>
+        /// Get all colors in the clustering, mapped to the superpixels they are assigned to
+        /// </summary>
+        /// <returns></returns>
+        public IReadOnlyDictionary<Color, List<int>> GetSuperPixelColors()
+        {
+            var dict = new Dictionary<Color, List<int>>();
+
+            // iterate over super pixels
+            for (int i = 0; i < _superPixels.Length; i++)
+            {
+                var color = _colorCentroids[_superPixels[i].Label].AsColor();
+
+                if(dict.ContainsKey(color))
+                    dict[color].Add(i);
+
+                else
+                    dict[color] = new List<int>{i};
+            }
+
+            return dict;
         }
     }
 }
